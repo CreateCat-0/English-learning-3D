@@ -1,0 +1,26 @@
+@keyframes particleAnimation {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) translate(0px, 0px);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) translate(
+            calc(cos(var(--angle)) * var(--speed) * 100px),
+            calc(sin(var(--angle)) * var(--speed) * 100px)
+        );
+    }
+}
+
+@keyframes flip {
+    0% {
+        transform: rotateZ(0deg);
+    }
+    100% {
+        transform: rotateZ(360deg);
+    }
+}
+
+.animate-flip {
+    animation: flip 0.5s linear forwards;
+}
