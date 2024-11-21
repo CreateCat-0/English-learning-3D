@@ -273,9 +273,9 @@ function MainComponent() {
       className: "fixed inset-0 bg-gray-500 bg-opacity-50 flex flex-col items-center justify-center"
     }, /*#__PURE__*/React.createElement("div", {
       className: "text-6xl font-inter text-green-500 animate-bounce mb-4"
-    }, "Clear\uFF01"), /*#__PURE__*/React.createElement("button", {
+    }, "Clear\u0021"), /*#__PURE__*/React.createElement("button", {
       onClick: () => setShowQuestionList(true),
-      className: "px-4 py-2 bg-blue-500 text-white rounded"
+      className: "px-4 py-2 bg-green-500 text-white rounded"
     }, "View Questions"));
   }
   return /*#__PURE__*/React.createElement("div", {
