@@ -19,8 +19,11 @@ function MainComponent() {
   const [bgmAudio, setBgmAudio] = useState(null);
   const [isRotating, setIsRotating] = useState(false);
   const [countdownAudio, setCountdownAudio] = useState(null);
-  const [inputWidth, setInputWidth] = useState(0);
+  const [showQuestionList, setShowQuestionList] = useState(false);
+  const [checkedQuestions, setCheckedQuestions] = useState([]);
+  const [initialInput, setInitialInput] = useState("");
   const inputRef = useRef(null);
+  const bgmRef = useRef(null);
   const speak = text => {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "en-US";
@@ -38,15 +41,16 @@ function MainComponent() {
   }, [showAnswer]);
   useEffect(() => {
     if (gameStarted && !allComplete && !bgmAudio) {
-      const bgm = new Audio("dotabatare-su.mp3");
+      const bgm = new Audio("https://otologic.jp/sounds/bgm/pre/dotabatare-su.mp3");
       bgm.loop = true;
       bgm.volume = 0.3;
       bgm.play();
       setBgmAudio(bgm);
+      bgmRef.current = bgm;
     }
     if (gameStarted && !allComplete) {
       const id = setTimeout(() => {
-        const audio = new Audio("Countdown06-1.mp3");
+        const audio = new Audio("https://otologic.jp/sounds/se/pre/Countdown06-1.mp3");
         setCountdownAudio(audio);
         audio.play();
         audio.onended = () => {
@@ -97,7 +101,7 @@ function MainComponent() {
   useEffect(() => {
     if (allComplete && bgmAudio) {
       bgmAudio.pause();
-      const clearAudio = new Audio("Phrase03-2.mp3");
+      const clearAudio = new Audio("https://otologic.jp/sounds/se/pre/Phrase03-2.mp3");
       clearAudio.play();
     }
   }, [allComplete]);
@@ -111,6 +115,38 @@ function MainComponent() {
       }
     };
   }, []);
+  const handlePlayAgain = () => {
+    const initialWordPairs = initialInput.split("\n").map(line => {
+      const [word, meaning, showCircles] = line.split(",");
+      return {
+        word: word.trim(),
+        meaning: meaning.trim(),
+        showCircles: showCircles ? showCircles.trim() === "0" : false,
+        correct: false
+      };
+    }).filter(pair => pair.word && pair.meaning);
+    const selectedWords = initialWordPairs.filter((_, index) => checkedQuestions.includes(index));
+    setWords(selectedWords);
+    setCurrentIndex(0);
+    setShowQuestionList(false);
+    setCheckedQuestions([]);
+    setGameStarted(true);
+    setAllComplete(false);
+    if (bgmRef.current) {
+      bgmRef.current.currentTime = 0;
+      bgmRef.current.play();
+    } else {
+      const bgm = new Audio("https://otologic.jp/sounds/bgm/pre/dotabatare-su.mp3");
+      bgm.loop = true;
+      bgm.volume = 0.3;
+      bgm.play();
+      setBgmAudio(bgm);
+      bgmRef.current = bgm;
+    }
+  };
+  const toggleQuestionCheck = index => {
+    setCheckedQuestions(prev => prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]);
+  };
   const countAlphabetChars = str => {
     return str.replace(/[^a-zA-Z]/g, "").length;
   };
@@ -128,6 +164,7 @@ function MainComponent() {
   const handleInitialSubmit = e => {
     e.preventDefault();
     const input = e.target.wordInput.value;
+    setInitialInput(input);
     const wordPairs = input.split("\n").map(line => {
       const [word, meaning, showCircles] = line.split(",");
       return {
@@ -147,7 +184,7 @@ function MainComponent() {
           countdownAudio.pause();
           setCountdownAudio(null);
         }
-        const audio = new Audio("Party_Popper03-1(Dry).mp3");
+        const audio = new Audio("https://otologic.jp/sounds/se/pre2/Party_Popper03-1(Dry).mp3");
         audio.play();
         const newParticles = words[currentIndex].meaning.split("").map(() => {
           return [...Array.from({
@@ -200,17 +237,52 @@ function MainComponent() {
     }, "Start")));
   }
   if (allComplete) {
+    if (showQuestionList) {
+      const initialWordPairs = initialInput.split("\n").map(line => {
+        const [word, meaning, showCircles] = line.split(",");
+        return {
+          word: word.trim(),
+          meaning: meaning.trim(),
+          showCircles: showCircles ? showCircles.trim() === "0" : false,
+          correct: false
+        };
+      }).filter(pair => pair.word && pair.meaning);
+      return /*#__PURE__*/React.createElement("div", {
+        className: "min-h-screen bg-gray-100 p-4"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "max-w-lg mx-auto"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "h-[80vh] overflow-y-auto mb-4"
+      }, initialWordPairs.map((word, index) => /*#__PURE__*/React.createElement("div", {
+        key: index,
+        onClick: () => toggleQuestionCheck(index),
+        className: "flex items-center justify-between p-2 bg-white mb-2 rounded cursor-pointer text-[20px]"
+      }, /*#__PURE__*/React.createElement("span", null, `${word.word}, ${word.meaning}`), checkedQuestions.includes(index) && /*#__PURE__*/React.createElement("span", {
+        className: "text-green-500"
+      }, "\u2713")))), /*#__PURE__*/React.createElement("div", {
+        className: "flex flex-col gap-2"
+      }, /*#__PURE__*/React.createElement("button", {
+        onClick: () => setShowQuestionList(false),
+        className: "w-full py-2 bg-gray-500 text-white rounded"
+      }, "Back"), checkedQuestions.length > 0 && /*#__PURE__*/React.createElement("button", {
+        onClick: handlePlayAgain,
+        className: "w-full py-2 bg-blue-500 text-white rounded"
+      }, "Play Again"))));
+    }
     return /*#__PURE__*/React.createElement("div", {
-      className: "fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center"
+      className: "fixed inset-0 bg-gray-500 bg-opacity-50 flex flex-col items-center justify-center"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "text-6xl font-inter text-green-500 animate-bounce"
-    }, "Clear\uFF01"));
+      className: "text-6xl font-inter text-green-500 animate-bounce mb-4"
+    }, "Clear\uFF01"), /*#__PURE__*/React.createElement("button", {
+      onClick: () => setShowQuestionList(true),
+      className: "px-4 py-2 bg-blue-500 text-white rounded"
+    }, "View Questions"));
   }
   return /*#__PURE__*/React.createElement("div", {
     className: "min-h-screen flex flex-col items-center justify-center p-4 relative"
   }, /*#__PURE__*/React.createElement("video", {
     className: "fixed top-0 left-0 w-full h-full object-cover -z-10",
-    src: "227353_medium.mp4",
+    src: "https://cdn.pixabay.com/video/2024/08/19/227353_large.mp4",
     autoPlay: true,
     loop: true,
     muted: true,
@@ -284,7 +356,7 @@ function MainComponent() {
             );
           }
         }
-        
+
         @keyframes flip {
           0% {
             transform: rotateZ(0deg);
@@ -293,7 +365,7 @@ function MainComponent() {
             transform: rotateZ(360deg);
           }
         }
-        
+
         .animate-flip {
           animation: flip 0.5s linear forwards;
         }
