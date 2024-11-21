@@ -41,7 +41,7 @@ function MainComponent() {
   }, [showAnswer]);
   useEffect(() => {
     if (gameStarted && !allComplete && !bgmAudio) {
-      const bgm = new Audio("https://otologic.jp/sounds/bgm/pre/dotabatare-su.mp3");
+      const bgm = new Audio("dotabatare-su.mp3");
       bgm.loop = true;
       bgm.volume = 0.3;
       bgm.play();
@@ -50,7 +50,7 @@ function MainComponent() {
     }
     if (gameStarted && !allComplete) {
       const id = setTimeout(() => {
-        const audio = new Audio("https://otologic.jp/sounds/se/pre/Countdown06-1.mp3");
+        const audio = new Audio("Countdown06-1.mp3");
         setCountdownAudio(audio);
         audio.play();
         audio.onended = () => {
@@ -101,7 +101,7 @@ function MainComponent() {
   useEffect(() => {
     if (allComplete && bgmAudio) {
       bgmAudio.pause();
-      const clearAudio = new Audio("https://otologic.jp/sounds/se/pre/Phrase03-2.mp3");
+      const clearAudio = new Audio("Phrase03-2.mp3");
       clearAudio.play();
     }
   }, [allComplete]);
@@ -136,7 +136,7 @@ function MainComponent() {
       bgmRef.current.currentTime = 0;
       bgmRef.current.play();
     } else {
-      const bgm = new Audio("https://otologic.jp/sounds/bgm/pre/dotabatare-su.mp3");
+      const bgm = new Audio("dotabatare-su.mp3");
       bgm.loop = true;
       bgm.volume = 0.3;
       bgm.play();
@@ -184,7 +184,7 @@ function MainComponent() {
           countdownAudio.pause();
           setCountdownAudio(null);
         }
-        const audio = new Audio("https://otologic.jp/sounds/se/pre2/Party_Popper03-1(Dry).mp3");
+        const audio = new Audio("Party_Popper03-1(Dry).mp3");
         audio.play();
         const newParticles = words[currentIndex].meaning.split("").map(() => {
           return [...Array.from({
@@ -282,7 +282,7 @@ function MainComponent() {
     className: "min-h-screen flex flex-col items-center justify-center p-4 relative"
   }, /*#__PURE__*/React.createElement("video", {
     className: "fixed top-0 left-0 w-full h-full object-cover -z-10",
-    src: "https://cdn.pixabay.com/video/2024/08/19/227353_large.mp4",
+    src: "227353_medium.mp4",
     autoPlay: true,
     loop: true,
     muted: true,
